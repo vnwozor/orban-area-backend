@@ -9,6 +9,17 @@ import requestRoutes from './routes/requestRoutes.js'
 dotenv.config()
 connectDB()
 
+const corsOptions = {
+    origin: [
+        'http://localhost:5173',
+        'http://localhost:5174',
+        'https://your-rider-app.vercel.app',   // replace with your real URL
+        'https://your-driver-app.vercel.app',  // replace with your real URL
+    ],
+    methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'], // "methods" not "method"
+    credentials: true, // lowercase "credentials", not "Credential"
+}
+
 const app = express()
 app.use(cors())
 app.use(express.json())
