@@ -13,15 +13,15 @@ const corsOptions = {
     origin: [
         'http://localhost:5173',
         'http://localhost:5174',
-        'https://your-rider-app.vercel.app',   // replace with your real URL
-        'https://your-driver-app.vercel.app',  // replace with your real URL
+        'https://your-rider-app.vercel.app',
+        'https://your-driver-app.vercel.app',
     ],
-    methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'], // "methods" not "method"
-    credentials: true, // lowercase "credentials", not "Credential"
+    methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'],
+    credentials: true,
 }
 
 const app = express()
-app.use(cors())
+app.use(cors(corsOptions))
 app.use(express.json())
 
 app.use('/api/users', userRoutes)
