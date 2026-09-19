@@ -23,28 +23,58 @@ const carSchema = new mongoose.Schema(
     { _id: false }
 )
 
+const emergencyContactSchema = new mongoose.Schema(
+    {
+        name: { type: String, required: true },
+        phone: { type: String, required: true },
+        relationship: { type: String, default: '' },
+    },
+    { _id: false }
+)
+
 const driverSchema = new mongoose.Schema(
     {
         name: { type: String, required: true },
         phone: { type: String, required: true, unique: true },
-        email: { type: String, required: true, unique: true },
-        password: { type: String, required: true, select: false },
+        email: {
+            type: String,
+            unique: true,
+            sparse: true,
+        },
+        // Not required: OTP-only and OAuth-only accounts have no password
+        password: {
+            type: String,
+            select: false,
+            required: function () {
+                return !this.googleId && !this.appleId
+            },
+        },
         role: { type: String, default: 'driver' },
         rating: { type: Number, default: 5 },
         available: { type: Boolean, default: true },
         currentLocation: locationSchema,
         car: carSchema,
+
+        // OAuth linkage (populated after a verified Firebase Google/Apple sign-in)
+        googleId: { type: String, unique: true, sparse: true },
+        appleId: { type: String, unique: true, sparse: true },
+
+        phoneVerified: { type: Boolean, default: false },
+        emailVerified: { type: Boolean, default: false },
+
+        emergencyContact: emergencyContactSchema,
     },
     { timestamps: true }
 )
 
 driverSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return next()
+    if (!this.isModified('password') || !this.password) return next()
     this.password = await bcrypt.hash(this.password, 10)
     next()
 })
 
 driverSchema.methods.comparePassword = function (candidate) {
+    if (!this.password) return Promise.resolve(false)
     return bcrypt.compare(candidate, this.password)
 }
 
