@@ -1,0 +1,15 @@
+# dependencies
+node_modules
+
+# secrets - never commit these
+.env
+.env.*
+!.env.example
+serviceAccount*.json
+*firebase-adminsdk*.json
+
+# logs and OS files
+*.log
+.DS_Store
+.env
+node_modules
